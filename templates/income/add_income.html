@@ -2,10 +2,10 @@
 
 {% block content %}
 <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-4 border-bottom" style="border-color: var(--card-border) !important;">
-    <h1 class="h2 font-weight-bold">Add Expense</h1>
+    <h1 class="h2 font-weight-bold">Add Income</h1>
     <div class="btn-toolbar mb-2 mb-md-0">
-        <a href="{% url 'expenses' %}" class="btn btn-outline-secondary text-main border-secondary">
-            <i class="bi bi-arrow-left"></i> Back to Expenses
+        <a href="{% url 'income' %}" class="btn btn-outline-secondary text-main border-secondary">
+            <i class="bi bi-arrow-left"></i> Back to Income
         </a>
     </div>
 </div>
@@ -13,7 +13,7 @@
 <div class="row">
     <div class="col-md-8 col-lg-6">
         <div class="glass-card">
-            <form method="POST" action="{% url 'add-expense' %}">
+            <form method="POST" action="{% url 'add-income' %}">
                 {% csrf_token %}
                 <div class="mb-3">
                     <label class="form-label text-muted">Amount</label>
@@ -25,20 +25,20 @@
                 
                 <div class="mb-3">
                     <label class="form-label text-muted">Description</label>
-                    <input type="text" name="description" class="form-control form-control-custom" required placeholder="e.g., Groceries">
+                    <input type="text" name="description" class="form-control form-control-custom" required placeholder="e.g., Salary, Freelance">
                 </div>
                 
                 <div class="mb-3">
-                    <label class="form-label text-muted">Category</label>
-                    <input type="text" name="category" class="form-control form-control-custom" required placeholder="e.g., Food, Transport">
+                    <label class="form-label text-muted">Source</label>
+                    <input type="text" name="source" class="form-control form-control-custom" required placeholder="e.g., Job, Side Hustle">
                 </div>
 
                 <div class="mb-4">
                     <label class="form-label text-muted">Date</label>
-                    <input type="date" name="expense_date" class="form-control form-control-custom" required>
+                    <input type="date" name="income_date" class="form-control form-control-custom" required>
                 </div>
                 
-                <button type="submit" class="btn btn-gradient w-100">Save Expense</button>
+                <button type="submit" class="btn btn-gradient w-100">Save Income</button>
             </form>
         </div>
     </div>

@@ -1,49 +1,103 @@
 {% load static %}
-
-<html lang="en" data-bs-theme="auto">
+<!doctype html>
+<html lang="en">
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>WalletWise
-      {% block title %}
-      {% endblock %}
-    </title>
+    <title>WalletWise | {% block title %}Dashboard{% endblock %}</title>
 
     <link href="{% static 'css/bootstrap.min.css' %}" rel="stylesheet">
     <link href="{% static 'css/main.css' %}" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.min.css" rel="stylesheet">
-    <link href="{% static 'css/dashboard.css' %}" rel="stylesheet">
-    
+    <!-- html2pdf for PDF export -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
   </head>
   <body>
-    <header class="navbar sticky-top bg-dark flex-md-nowrap p-0 shadow" data-bs-theme="dark">
-      <a class="navbar-brand col-md-3 col-lg-2 me-0 px-3 fs-6 text-white" href="#">Truly Expenses</a>
+    <header class="navbar sticky-top flex-md-nowrap p-0 shadow">
+      <a class="navbar-brand col-md-3 col-lg-2 me-0 px-3 fs-6 d-flex align-items-center" href="/">
+        <img src="{% static 'images/logo.png' %}" alt="WalletWise Logo" height="30" class="me-2 rounded">
+        WalletWise
+      </a>
       
-        <input  class="form-control form-control-dark w-100" type="text" placeholder="Search" aria-label="Search">
-      
-      <ul class="navbar-nav px-3 ">
-        <li class="nav-item text-nowrap">
-          <a class="nav-link" href="#">Sign Out</a>
-        </li>
-        
-      </ul>
-      
-     
+      <div class="navbar-nav px-3 d-flex flex-row align-items-center w-100 justify-content-end">
+        <div class="nav-item text-nowrap me-4 text-muted">
+          Welcome, <strong>{{ request.user.username }}</strong>
+        </div>
+        <div class="nav-item text-nowrap">
+          <form method="POST" action="{% url 'logout' %}" class="m-0">
+             {% csrf_token %}
+             <button type="submit" class="btn btn-link nav-link text-accent">
+               <i class="bi bi-box-arrow-right"></i> Sign Out
+             </button>
+          </form>
+        </div>
+      </div>
     </header>
 
-    <div class="container-fluid">
+    <div class="container-fluid mt-4">
       <div class="row">
-        {% include 'partials/sidebar.html' %}
+        <div class="col-md-3 col-lg-2 d-md-block sidebar collapse">
+          <div class="position-sticky pt-3">
+            <ul class="nav flex-column">
+              <li class="nav-item mb-2">
+                <a class="nav-link {% if request.path == '/' %}text-accent fw-bold{% else %}text-muted{% endif %}" href="{% url 'dashboard' %}">
+                  <i class="bi bi-house-door me-2"></i> Dashboard
+                </a>
+              </li>
+              <li class="nav-item mb-2">
+                <a class="nav-link {% if '/expenses/' in request.path and 'summary' not in request.path %}text-accent fw-bold{% else %}text-muted{% endif %}" href="{% url 'expenses' %}">
+                  <i class="bi bi-cart me-2"></i> Expenses
+                </a>
+              </li>
+              <li class="nav-item mb-2">
+                <a class="nav-link {% if '/income/' in request.path and 'summary' not in request.path %}text-accent fw-bold{% else %}text-muted{% endif %}" href="{% url 'income' %}">
+                  <i class="bi bi-cash-stack me-2"></i> Income
+                </a>
+              </li>
+            </ul>
+
+            <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-2 text-muted text-uppercase">
+              <span>Summary</span>
+            </h6>
+            <ul class="nav flex-column mb-2">
+              <li class="nav-item mb-2">
+                <a class="nav-link {% if request.path == '/summary/expenses/' %}text-accent fw-bold{% else %}text-muted{% endif %}" href="{% url 'expense-summary' %}">
+                  <i class="bi bi-pie-chart me-2"></i> Expenses Summary
+                </a>
+              </li>
+              <li class="nav-item mb-2">
+                <a class="nav-link {% if request.path == '/summary/income/' %}text-accent fw-bold{% else %}text-muted{% endif %}" href="{% url 'income-summary' %}">
+                  <i class="bi bi-bar-chart me-2"></i> Income Summary
+                </a>
+              </li>
+            </ul>
+
+            <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-2 text-muted text-uppercase">
+              <span>Preferences</span>
+            </h6>
+            <ul class="nav flex-column mb-2">
+              <li class="nav-item mb-2">
+                <a class="nav-link {% if request.path == '/settings/' %}text-accent fw-bold{% else %}text-muted{% endif %}" href="{% url 'settings' %}">
+                  <i class="bi bi-gear me-2"></i> Settings
+                </a>
+              </li>
+            </ul>
+          </div>
+        </div>
 
         <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+          {% if messages %}
+              {% for message in messages %}
+                  <div class="alert alert-{{ message.tags }} mt-3">{{ message }}</div>
+              {% endfor %}
+          {% endif %}
+          
           {% block content %}
           {% endblock %}
         </main>
       </div>
     </div>
     
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.3.2/dist/chart.umd.js" integrity="sha384-eI7PSr3L1XLISH8JdDII5YN/njoSsxfbrkCTnJrzXt+ENP5MOVBxD+l6sEG4zoLp" crossorigin="anonymous"></script>
-    <script src="{% static 'js/dashboard.js' %}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   </body>
 </html>

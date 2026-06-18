@@ -1,11 +1,38 @@
 {% extends 'base_auth.html' %}
+{% load static %}
+
+{% block title %}Register{% endblock %}
 
 {% block content %}
-<div class="card">
-    <div class="card-body">
-        <h1>Login</h1>
-
+<div class="glass-card text-center">
+    <div class="text-center mb-4">
+        <img src="{% static 'images/logo.png' %}" alt="WalletWise Logo" height="60" class="mb-3 rounded">
+        <h2 class="mb-4 font-weight-bold">Create Account</h2>
     </div>
-</div>
+    
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+        {% endfor %}
+    {% endif %}
 
+    <form method="POST" action="{% url 'register' %}">
+        {% csrf_token %}
+        <div class="mb-3 text-start">
+            <label class="form-label text-muted">Username</label>
+            <input type="text" name="username" class="form-control form-control-custom w-100" required placeholder="Enter username">
+        </div>
+        <div class="mb-3 text-start">
+            <label class="form-label text-muted">Email address</label>
+            <input type="email" name="email" class="form-control form-control-custom w-100" required placeholder="Enter email">
+        </div>
+        <div class="mb-4 text-start">
+            <label class="form-label text-muted">Password</label>
+            <input type="password" name="password" class="form-control form-control-custom w-100" required placeholder="Create password">
+        </div>
+        <button class="btn btn-gradient w-100 mb-3" type="submit">Sign Up</button>
+    </form>
+    
+    <p class="text-muted mt-3">Already have an account? <a href="{% url 'login' %}" class="text-accent text-decoration-none">Log in</a></p>
+</div>
 {% endblock %}

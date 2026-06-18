@@ -1,11 +1,34 @@
 {% extends 'base_auth.html' %}
+{% load static %}
+
+{% block title %}Login{% endblock %}
 
 {% block content %}
-<div class="card">
-    <div class="card-body">
-        <h1>Login</h1>
-
+<div class="glass-card text-center">
+    <div class="text-center mb-4">
+        <img src="{% static 'images/logo.png' %}" alt="WalletWise Logo" height="60" class="mb-3 rounded">
+        <h2 class="mb-4 font-weight-bold">Welcome Back</h2>
     </div>
-</div>
+    
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+        {% endfor %}
+    {% endif %}
 
+    <form method="POST" action="{% url 'login' %}">
+        {% csrf_token %}
+        <div class="mb-3 text-start">
+            <label class="form-label text-muted">Username</label>
+            <input type="text" name="username" class="form-control form-control-custom w-100" required placeholder="Enter username">
+        </div>
+        <div class="mb-4 text-start">
+            <label class="form-label text-muted">Password</label>
+            <input type="password" name="password" class="form-control form-control-custom w-100" required placeholder="Enter password">
+        </div>
+        <button class="btn btn-gradient w-100 mb-3" type="submit">Sign In</button>
+    </form>
+    
+    <p class="text-muted mt-3">Don't have an account? <a href="{% url 'register' %}" class="text-accent text-decoration-none">Sign up</a></p>
+</div>
 {% endblock %}

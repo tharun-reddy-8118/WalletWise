@@ -1,0 +1,152 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-4 border-bottom" style="border-color: var(--card-border) !important;">
+    <h1 class="h2 font-weight-bold">Dashboard</h1>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-4 mb-3">
+        <div class="glass-card text-center p-4">
+            <h5 class="text-muted mb-2">Total Income</h5>
+            <h2 class="text-success mb-0">{{ currency }} {{ total_income|floatformat:2 }}</h2>
+        </div>
+    </div>
+    <div class="col-md-4 mb-3">
+        <div class="glass-card text-center p-4">
+            <h5 class="text-muted mb-2">Total Expenses</h5>
+            <h2 class="text-danger mb-0">{{ currency }} {{ total_expense|floatformat:2 }}</h2>
+        </div>
+    </div>
+    <div class="col-md-4 mb-3">
+        <div class="glass-card text-center p-4">
+            <h5 class="text-muted mb-2">Current Balance</h5>
+            <h2 class="text-accent mb-0">{{ currency }} {{ balance|floatformat:2 }}</h2>
+        </div>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-12">
+        <div class="glass-card p-4">
+            <h5 class="text-muted mb-3">Trend Over Time</h5>
+            <canvas id="trendChart" height="80"></canvas>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-6 mb-4">
+        <div class="glass-card p-0 h-100 overflow-hidden">
+            <h5 class="p-3 mb-0 border-bottom" style="border-color: var(--card-border) !important;">Recent Expenses</h5>
+            {% if recent_expenses %}
+                <div class="list-group list-group-flush">
+                    {% for expense in recent_expenses %}
+                        <div class="expense-item">
+                            <div>
+                                <h6 class="mb-1 text-main">{{ expense.description }}</h6>
+                                <span class="badge bg-secondary me-2">{{ expense.category }}</span>
+                                <small class="expense-date">{{ expense.date }}</small>
+                            </div>
+                            <div class="expense-amount text-danger">
+                                -{{ currency }} {{ expense.amount }}
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="text-center p-4 text-muted">No recent expenses.</div>
+            {% endif %}
+        </div>
+    </div>
+    <div class="col-md-6 mb-4">
+        <div class="glass-card p-0 h-100 overflow-hidden">
+            <h5 class="p-3 mb-0 border-bottom" style="border-color: var(--card-border) !important;">Recent Income</h5>
+            {% if recent_incomes %}
+                <div class="list-group list-group-flush">
+                    {% for income in recent_incomes %}
+                        <div class="expense-item">
+                            <div>
+                                <h6 class="mb-1 text-main">{{ income.description }}</h6>
+                                <span class="badge bg-secondary me-2">{{ income.source }}</span>
+                                <small class="expense-date">{{ income.date }}</small>
+                            </div>
+                            <div class="expense-amount text-success">
+                                +{{ currency }} {{ income.amount }}
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="text-center p-4 text-muted">No recent income.</div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    const expenseData = JSON.parse('{{ expense_data|safe }}');
+    const incomeData = JSON.parse('{{ income_data|safe }}');
+
+    // Combine all unique dates from both sets and sort them
+    let dates = [...new Set([...expenseData.map(d => d.date), ...incomeData.map(d => d.date)])].sort();
+
+    // Align data arrays with the sorted dates
+    const expenseAmounts = dates.map(date => {
+        let match = expenseData.find(d => d.date === date);
+        return match ? match.total : 0;
+    });
+
+    const incomeAmounts = dates.map(date => {
+        let match = incomeData.find(d => d.date === date);
+        return match ? match.total : 0;
+    });
+
+    const ctx = document.getElementById('trendChart').getContext('2d');
+    new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: dates,
+            datasets: [
+                {
+                    label: 'Income',
+                    data: incomeAmounts,
+                    borderColor: '#10b981', // text-success
+                    backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                    borderWidth: 2,
+                    fill: true,
+                    tension: 0.3
+                },
+                {
+                    label: 'Expenses',
+                    data: expenseAmounts,
+                    borderColor: '#ef4444', // text-danger
+                    backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                    borderWidth: 2,
+                    fill: true,
+                    tension: 0.3
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    labels: { color: '#9ca3af' }
+                }
+            },
+            scales: {
+                x: {
+                    ticks: { color: '#9ca3af' },
+                    grid: { color: 'rgba(255,255,255,0.05)' }
+                },
+                y: {
+                    ticks: { color: '#9ca3af' },
+                    grid: { color: 'rgba(255,255,255,0.05)' }
+                }
+            }
+        }
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-4 border-bottom" style="border-color: var(--card-border) !important;">
+    <h1 class="h2 font-weight-bold">Settings</h1>
+</div>
+
+<div class="row">
+    <div class="col-md-8 col-lg-6">
+        <div class="glass-card">
+            <form method="POST" action="{% url 'settings' %}">
+                {% csrf_token %}
+                
+                <h4 class="mb-4 text-accent">Localization</h4>
+                
+                <div class="mb-4">
+                    <label class="form-label text-muted">Currency Symbol</label>
+                    <select name="currency" class="form-select form-control-custom bg-dark text-main">
+                        <option value="₹" {% if currency == '₹' %}selected{% endif %}>Indian Rupee (₹)</option>
+                        <option value="$" {% if currency == '$' %}selected{% endif %}>US Dollar ($)</option>
+                        <option value="€" {% if currency == '€' %}selected{% endif %}>Euro (€)</option>
+                        <option value="£" {% if currency == '£' %}selected{% endif %}>British Pound (£)</option>
+                    </select>
+                    <small class="text-muted d-block mt-2">This symbol will be used across all your dashboards and reports.</small>
+                </div>
+                
+                <hr class="border-secondary my-4">
+                
+                <h4 class="mb-4 text-accent">Account</h4>
+                <div class="mb-4">
+                    <label class="form-label text-muted">Username</label>
+                    <input type="text" class="form-control form-control-custom" value="{{ request.user.username }}" disabled>
+                </div>
+                <div class="mb-4">
+                    <label class="form-label text-muted">Email</label>
+                    <input type="text" class="form-control form-control-custom" value="{{ request.user.email }}" disabled>
+                </div>
+
+                <button type="submit" class="btn btn-gradient w-100">Save Preferences</button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
