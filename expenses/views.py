@@ -66,6 +66,7 @@ def income_list(request):
     incomes = Income.objects.filter(owner=request.user).order_by('-date')
     context = {'incomes': incomes, 'currency': get_currency(request.user)}
     return render(request, 'income/index.html', context)
+    print()
 
 @login_required(login_url='/authentication/login')
 def add_income(request):
